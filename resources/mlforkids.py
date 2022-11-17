@@ -33,7 +33,7 @@ class MLforKidsImageProject:
         print("MLFORKIDS: Downloading information about your machine learning project")
         self.scratchkey = scratchkey
         try:
-            apiurl = "https://machinelearningforkids.co.uk/api/scratch/" + scratchkey + "/train"
+            apiurl = f"https://machinelearningforkids.co.uk/api/scratch/{scratchkey}/train"
             with urllib.request.urlopen(apiurl) as url:
                 self.__downloaded_training_images_list = json.loads(url.read().decode())
         except urllib.error.HTTPError:
@@ -66,8 +66,9 @@ class MLforKidsImageProject:
                 print("ERROR: Unable to download training image from", trainingitem["imageurl"])
                 print(downloaderr)
                 print("ERROR: Skipping training image and continuing without it", trainingitem["imageurl"])
-        return ImageDataGenerator().flow_from_directory(str(projectcachedir),
-                                                        target_size=MLforKidsImageProject.IMAGESIZE)
+        return ImageDataGenerator().flow_from_directory(
+            projectcachedir, target_size=MLforKidsImageProject.IMAGESIZE
+        )
 
     # Creates a lookup table for the classes that this project is being trained
     #  to recognize.
@@ -108,9 +109,7 @@ class MLforKidsImageProject:
         if trainingimagesdata.batch_size > trainingimagesdata.samples:
             trainingimagesdata.batch_size = trainingimagesdata.samples
         steps_per_epoch = trainingimagesdata.samples // trainingimagesdata.batch_size
-        epochs = 8
-        if trainingimagesdata.samples > 55:
-            epochs = 15
+        epochs = 15 if trainingimagesdata.samples > 55 else 8
         self.ml_model.fit(trainingimagesdata, epochs=epochs, steps_per_epoch=steps_per_epoch, verbose=0)
         print("MLFORKIDS: Model training complete")
 

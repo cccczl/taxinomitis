@@ -22,27 +22,27 @@ models = pylru.lrucache(ML_MODEL_CACHE_SIZE)
 
 
 def deleteTraining(tenant, student, project):
-    training = "./data/" + tenant + "/" + student + "/" + project + ".json"
+    training = f"./data/{tenant}/{student}/{project}.json"
     if os.path.exists(training):
         os.remove(training)
 
 def deleteStudent(tenant, student):
-    training = "./data/" + tenant + "/" + student
+    training = f"./data/{tenant}/{student}"
     if os.path.exists(training):
         shutil.rmtree(training)
 
 def deleteTenant(tenant):
-    training = "./data/" + tenant
+    training = f"./data/{tenant}"
     if os.path.exists(training):
         shutil.rmtree(training)
 
 
 
 def getTrainingFilePath(tenant, student, project):
-    trainingFolder = "./data/" + tenant + "/" + student
+    trainingFolder = f"./data/{tenant}/{student}"
     if not os.path.exists(trainingFolder):
         os.makedirs(trainingFolder)
-    return trainingFolder + "/" + project + ".json"
+    return f"{trainingFolder}/{project}.json"
 
 def writeTrainingData(tenant, student, project, data):
     filepath = getTrainingFilePath(tenant, student, project)
@@ -182,10 +182,7 @@ def classify(tenant, student, project, data):
 
     classes = model["tree"].classes_
 
-    output = {}
-    for i, prob in enumerate(prediction[0]):
-        output[classes[i]] = prob * 100
-    return output
+    return {classes[i]: prob * 100 for i, prob in enumerate(prediction[0])}
 
 
 
